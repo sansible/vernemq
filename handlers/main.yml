@@ -1,0 +1,13 @@
+---
+
+- name: Reload VerneMQ
+  become: yes
+  service:
+    name: vernemq
+    state: reloaded
+
+- name: Restart VerneMQ
+  become: yes
+  service:
+    name: vernemq
+    state: restarted

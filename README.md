@@ -1,2 +1,100 @@
 # vernemq
-Installs and configures VerneMQ
+
+Master: [![Build Status](https://travis-ci.org/sansible/vernemq.svg?branch=master)](https://travis-ci.org/sansible/vernemq)  
+Develop: [![Build Status](https://travis-ci.org/sansible/vernemq.svg?branch=develop)](https://travis-ci.org/sansible/vernemq)
+
+* [ansible.cfg](#ansible-cfg)
+* [Installation and Dependencies](#installation-and-dependencies)
+* [Tags](#tags)
+* [Examples](#examples)
+
+This role installs and configures the [VerneMQ MQTT publish/subscribe message broker](https://vernemq.com/).
+
+
+## ansible.cfg
+
+This role is designed to work with merge "hash_behaviour". Make sure your
+ansible.cfg contains these settings
+
+```INI
+[defaults]
+hash_behaviour = merge
+```
+
+
+## Installation and Dependencies
+
+To install run `ansible-galaxy install sansible.vernemq` or add this to your
+`roles.yml`.
+
+```YAML
+- name: sansible.vernemq
+  version: v1.0
+```
+
+and run `ansible-galaxy install -p ./roles -r roles.yml`
+
+
+## Tags
+
+This role uses tags: **build** and **configure**
+
+* `build` - Installs and starts VerneMQ
+* `configure` - Configures VerneMQ
+
+
+## Arguments
+
+Argument | Default | Description
+----------|---------|------------
+version | 1.2.0 | Version of VerneMQ to be installed (**NOTE:** Version has to be available from [the official VerneMQ downloads page](https://vernemq.com/downloads/index.html))
+nofiles |   | Max number of open files for the VerneMQ process
+configuration | { } | `key: value` configuration option pairs
+
+
+## Examples
+
+Install VerneMQ stable with default configuration:
+
+```YAML
+- name: Install VerneMQ
+  hosts: "somehost"
+
+  roles:
+    - role: sansible.vernemq
+```
+
+Install VerneMQ v1.2.0, set the number of open maximum open files (`nofiles`) to 65536, and the `leveldb.maximum_memory.percent` configuration option to 8:
+
+```YAML
+- name: Install VerneMQ
+  hosts: "somehost"
+
+  roles:
+    - role: sansible.vernemq
+      sansible_vernemq:
+        version: 1.2.0
+        nofile: 65536
+        configuration:
+          leveldb.maximum_memory.percent: 8  
+```
+
+All [VerneMQ configuration options](https://vernemq.com/docs/configuration/) are supported.
+
+The `configuration` section is also the place to [manage VerneMQ plugins](https://vernemq.com/docs/configuration/plugins.html):
+
+```YAML
+- name: Install VerneMQ
+  hosts: "somehost"
+
+  roles:
+    - role: sansible.vernemq
+      sansible_vernemq:
+        configuration:
+          plugins.vmq_plugin: on
+```  
+
+
+## Development & Testing
+
+If you want to work on this role, please start with running `make watch`.  This will re-provision vagrant box on any file changes.

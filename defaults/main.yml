@@ -1,0 +1,6 @@
+---
+
+sansible_vernemq:
+  configuration: { }
+  nofile: ~
+  version: 1.2.0

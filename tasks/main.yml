@@ -1,0 +1,11 @@
+---
+
+ - name: Install VerneMQ
+   include: build.yml
+   tags:
+     - build
+
+ - name: Configure VerneMQ
+   include: configure.yml
+   tags:
+     - configure

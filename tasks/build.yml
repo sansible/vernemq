@@ -1,0 +1,30 @@
+---
+
+- name: Get System fs.file-max
+  command: sysctl -n fs.file-max
+  register: sysctl_filemax
+  changed_when: no
+  when: sansible_vernemq.nofile is defined
+
+- name: Set System fs.file-max
+  become: yes
+  sysctl:
+    name: fs.file-max
+    value: "{{ sansible_vernemq.nofile }}"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  when:
+    - sansible_vernemq.nofile is defined
+    - (sysctl_filemax.stdout | int) < sansible_vernemq.nofile
+
+- name: Download VerneMQ .deb Package
+  become: yes
+  get_url:
+    url: "https://bintray.com/artifact/download/erlio/vernemq/deb/{{ ansible_lsb.codename }}/vernemq_{{ sansible_vernemq.version }}-1_amd64.deb"
+    dest: "/tmp/vernemq_{{ sansible_vernemq.version }}-1_amd64.deb"
+
+- name: Install VerneMQ .deb Package
+  become: yes
+  apt:
+    deb: "/tmp/vernemq_{{ sansible_vernemq.version }}-1_amd64.deb"
