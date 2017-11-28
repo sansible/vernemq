@@ -1,0 +1,46 @@
+---
+
+- name: Set VerneMQ nofile Limits
+  become: true
+  lineinfile:
+    dest: /etc/default/vernemq
+    create: yes
+    regexp: "^ulimit -n \\d+"
+    line: "ulimit -n {{ sansible_vernemq.nofile }}"
+  notify: Restart VerneMQ
+  when: sansible_vernemq.nofile is defined
+
+- name: Set VerneMQ nofile Limits.conf
+  become: true
+  lineinfile:
+    dest: /etc/security/limits.conf
+    create: no
+    regexp: "^\\*\\s+{{ item }}\\s+nofile\\s+\\d+"
+    line: "* {{ item }} nofile {{ sansible_vernemq.nofile }}"
+  notify: Restart VerneMQ
+  with_items:
+    - soft
+    - hard
+  when: sansible_vernemq.nofile is defined
+
+- name: Edit VerneMQ Configuration File
+  become: true
+  ini_file:
+    dest: /etc/vernemq/vernemq.conf
+    section: ~
+    option: "{{ item.key }}"
+    value: "{% if item.value == true %}on{% elif item.value == false %}off{% else %}{{ item.value }}{% endif %}"
+  with_dict: "{{ sansible_vernemq.configuration }}"
+  notify: Reload VerneMQ
+
+- name: Check VerneMQ Configuration Options
+  become: yes
+  command: vernemq chkconfig
+  changed_when: no
+
+- name: Start and enable VerneMQ
+  become: true
+  service:
+    name: vernemq
+    state: started
+    enabled: yes

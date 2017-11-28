@@ -1,0 +1,67 @@
+---
+
+- name: Test sansible.vernemq Role
+  hosts: all
+
+  pre_tasks:
+    - name: Update apt
+      become: yes
+      apt:
+        cache_valid_time: 1800
+        update_cache: yes
+      tags:
+        - build
+
+  roles:
+    - role: sansible.vernemq
+      sansible_vernemq:
+        version: 1.2.0
+        nofile: 65536
+        configuration:
+          leveldb.maximum_memory.percent: 8
+          plugins.vmq_plugin: on
+
+  post_tasks:
+    - name: Assert VerneMQ is running
+      become: yes
+      command: vernemq getpid
+      changed_when: no
+      register: vernemq_pid
+      tags:
+        - assert
+
+    - name: Get System fs.file-max
+      command: sysctl -n fs.file-max
+      register: sysctl_filemax
+      changed_when: no
+      tags:
+        - assert
+
+    - name: Get nofiles for running VerneMQ Process
+      become: yes
+      command: "grep 'Max open files' /proc/{{ vernemq_pid.stdout }}/limits"
+      register: vernemq_nofiles
+      changed_when: no
+      tags:
+        - assert
+
+    - name: Assert System fs.file-max and nofiles for running VerneMQ Process are correct
+      assert:
+        that:
+          - sysctl_filemax.stdout >= sansible_vernemq.nofile
+          - "'{{ sansible_vernemq.nofile }}' in vernemq_nofiles.stdout"
+      tags:
+        - assert
+
+    - name: Assert VerneMQ Configuration
+      become: true
+      ini_file:
+        dest: /etc/vernemq/vernemq.conf
+        section: ~
+        option: "{{ item.key }}"
+        value: "{% if item.value == true %}on{% elif item.value == false %}off{% else %}{{ item.value }}{% endif %}"
+      with_dict: "{{ sansible_vernemq.configuration }}"
+      register: vernemq_configuration
+      failed_when: vernemq_configuration.changed
+      tags:
+        - assert
