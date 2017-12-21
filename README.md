@@ -47,9 +47,13 @@ This role uses tags: **build** and **configure**
 
 Argument | Default | Description
 ----------|---------|------------
-version | 1.2.0 | Version of VerneMQ to be installed (**NOTE:** Version has to be available from [the official VerneMQ downloads page](https://vernemq.com/downloads/index.html))
-nofiles |   | Max number of open files for the VerneMQ process
-configuration | { } | `key: value` configuration option pairs
+cluster_discovery_node | | Cluster node to join in `nodename@ipaddress` format
+configuration | | `key: value` configuration option pairs
+download_url | | Explicit URL from which to download VerneMQ Debian package _mutually exclusive with the `version` option_
+nofiles | 65536 | Max number of open files for the VerneMQ process
+version | 1.2.0 | Version of VerneMQ to be installed (**NOTE:** Version has to be available from [the official VerneMQ downloads page](https://vernemq.com/downloads/index.html)) _mutually exclusive with the `download_url` option_
+
+
 
 
 ## Examples
@@ -64,7 +68,8 @@ Install VerneMQ stable with default configuration:
     - role: sansible.vernemq
 ```
 
-Install VerneMQ v1.2.0, set the number of open maximum open files (`nofiles`) to 65536, and the `leveldb.maximum_memory.percent` configuration option to 8:
+Install VerneMQ v1.2.0, set the number of open maximum open files (`nofiles`) to 65536, join a cluster via 
+`saturn@192.168.0.3`, and the `leveldb.maximum_memory.percent` configuration option to 8:
 
 ```YAML
 - name: Install VerneMQ
@@ -73,15 +78,18 @@ Install VerneMQ v1.2.0, set the number of open maximum open files (`nofiles`) to
   roles:
     - role: sansible.vernemq
       sansible_vernemq:
-        version: 1.2.0
-        nofile: 65536
+        cluster_discovery_node: saturn@192.168.0.3
         configuration:
-          leveldb.maximum_memory.percent: 8  
+          leveldb.maximum_memory.percent: 8
+        nofile: 65536
+        version: 1.2.0
+
 ```
 
 All [VerneMQ configuration options](https://vernemq.com/docs/configuration/) are supported.
 
-The `configuration` section is also the place to [manage VerneMQ plugins](https://vernemq.com/docs/configuration/plugins.html):
+The `configuration` section is also the place to
+[manage VerneMQ plugins](https://vernemq.com/docs/configuration/plugins.html):
 
 ```YAML
 - name: Install VerneMQ
@@ -97,4 +105,5 @@ The `configuration` section is also the place to [manage VerneMQ plugins](https:
 
 ## Development & Testing
 
-If you want to work on this role, please start with running `make watch`.  This will re-provision vagrant box on any file changes.
+If you want to work on this role, please start with running `make watch`; this will execute `make test` on any file
+change.

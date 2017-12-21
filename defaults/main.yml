@@ -1,6 +1,8 @@
 ---
 
 sansible_vernemq:
-  configuration: { }
-  nofile: ~
+  cluster_discovery_node: ~
+  configuration: {}
+  download_url: ~
+  nofile: 65536
   version: 1.2.0
