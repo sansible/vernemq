@@ -10,30 +10,30 @@
   become: yes
   sysctl:
     name: fs.file-max
-    value: "{{ sansible_vernemq.nofile }}"
+    value: "{{ sansible_vernemq_nofile }}"
     sysctl_set: yes
     state: present
     reload: yes
-  when: (sysctl_filemax.stdout | int) < sansible_vernemq.nofile
+  when: (sysctl_filemax.stdout | int) < sansible_vernemq_nofile
 
 - block:
-    - name: Download VerneMQ .deb Package from sansible_vernemq.download_url
+    - name: Download VerneMQ .deb Package from sansible_vernemq_download_url
       get_url:
-        url: "{{ sansible_vernemq.download_url }}"
-        dest: "/tmp/{{ sansible_vernemq.download_url.split('/')[-1] }}"
-    - name: Install VerneMQ .deb Package from sansible_vernemq.download_url
+        url: "{{ sansible_vernemq_download_url }}"
+        dest: "/tmp/{{ sansible_vernemq_download_url.split('/')[-1] }}"
+    - name: Install VerneMQ .deb Package from sansible_vernemq_download_url
       apt:
-        deb: "/tmp/{{ sansible_vernemq.download_url.split('/')[-1] }}"
+        deb: "/tmp/{{ sansible_vernemq_download_url.split('/')[-1] }}"
   become: yes
-  when: sansible_vernemq.download_url is not none
+  when: sansible_vernemq_download_url is not none
 
 - block:
     - name: Download VerneMQ .deb Package from official Repository
       get_url:
-        url: "https://bintray.com/artifact/download/erlio/vernemq/deb/{{ ansible_lsb.codename }}/vernemq_{{ sansible_vernemq.version }}-1_amd64.deb"
-        dest: "/tmp/vernemq_{{ sansible_vernemq.version }}-1_amd64.deb"
+        url: "https://bintray.com/artifact/download/erlio/vernemq/deb/{{ ansible_lsb.codename }}/vernemq_{{ sansible_vernemq_version }}-1_amd64.deb"
+        dest: "/tmp/vernemq_{{ sansible_vernemq_version }}-1_amd64.deb"
     - name: Install VerneMQ .deb Package from official Repository
       apt:
-        deb: "/tmp/vernemq_{{ sansible_vernemq.version }}-1_amd64.deb"
+        deb: "/tmp/vernemq_{{ sansible_vernemq_version }}-1_amd64.deb"
   become: yes
-  when: sansible_vernemq.download_url is none
+  when: sansible_vernemq_download_url is none

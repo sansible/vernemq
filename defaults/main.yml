@@ -1,8 +1,7 @@
 ---
 
-sansible_vernemq:
-  cluster_discovery_node: ~
-  configuration: {}
-  download_url: ~
-  nofile: 65536
-  version: 1.2.0
+sansible_vernemq_cluster_discovery_node: ~
+sansible_vernemq_configuration: {}
+sansible_vernemq_download_url: ~
+sansible_vernemq_nofile: 65536
+sansible_vernemq_version: 1.3.1
