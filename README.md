@@ -3,23 +3,11 @@
 Master: [![Build Status](https://travis-ci.org/sansible/vernemq.svg?branch=master)](https://travis-ci.org/sansible/vernemq)  
 Develop: [![Build Status](https://travis-ci.org/sansible/vernemq.svg?branch=develop)](https://travis-ci.org/sansible/vernemq)
 
-* [ansible.cfg](#ansible-cfg)
 * [Installation and Dependencies](#installation-and-dependencies)
 * [Tags](#tags)
 * [Examples](#examples)
 
 This role installs and configures the [VerneMQ MQTT publish/subscribe message broker](https://vernemq.com/).
-
-
-## ansible.cfg
-
-This role is designed to work with merge "hash_behaviour". Make sure your
-ansible.cfg contains these settings
-
-```INI
-[defaults]
-hash_behaviour = merge
-```
 
 
 ## Installation and Dependencies
@@ -29,7 +17,7 @@ To install run `ansible-galaxy install sansible.vernemq` or add this to your
 
 ```YAML
 - name: sansible.vernemq
-  version: v1.0
+  version: v2.0
 ```
 
 and run `ansible-galaxy install -p ./roles -r roles.yml`
@@ -47,13 +35,11 @@ This role uses tags: **build** and **configure**
 
 Argument | Default | Description
 ----------|---------|------------
-cluster_discovery_node | | Cluster node to join in `nodename@ipaddress` format
-configuration | | `key: value` configuration option pairs
-download_url | | Explicit URL from which to download VerneMQ Debian package _mutually exclusive with the `version` option_
-nofiles | 65536 | Max number of open files for the VerneMQ process
-version | 1.2.0 | Version of VerneMQ to be installed (**NOTE:** Version has to be available from [the official VerneMQ downloads page](https://vernemq.com/downloads/index.html)) _mutually exclusive with the `download_url` option_
-
-
+sansible_vernemq_cluster_discovery_node | | Cluster node to join in `nodename@ipaddress` format
+sansible_vernemq_configuration | | `key: value` configuration option pairs
+sansible_vernemq_download_url | | Explicit URL from which to download VerneMQ Debian package _mutually exclusive with the `version` option_
+sansible_vernemq_nofile | 65536 | Max number of open files for the VerneMQ process
+sansible_vernemq_version | 1.3.1 | Version of VerneMQ to be installed (**NOTE:** Version has to be available from [the official VerneMQ downloads page](https://vernemq.com/downloads/index.html)) _mutually exclusive with the `download_url` option_
 
 
 ## Examples
