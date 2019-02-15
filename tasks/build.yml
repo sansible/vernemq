@@ -30,10 +30,10 @@
 - block:
     - name: Download VerneMQ .deb Package from official Repository
       get_url:
-        url: "https://bintray.com/artifact/download/erlio/vernemq/deb/{{ ansible_lsb.codename }}/vernemq_{{ sansible_vernemq_version }}-1_amd64.deb"
-        dest: "/tmp/vernemq_{{ sansible_vernemq_version }}-1_amd64.deb"
+        url: "https://github.com/vernemq/vernemq/releases/download/{{ sansible_vernemq_version }}/vernemq-{{ sansible_vernemq_version }}.{{ ansible_lsb.codename }}.x86_64.deb"
+        dest: "/tmp/vernemq-{{ sansible_vernemq_version }}.{{ ansible_lsb.codename }}.x86_64.deb"
     - name: Install VerneMQ .deb Package from official Repository
       apt:
-        deb: "/tmp/vernemq_{{ sansible_vernemq_version }}-1_amd64.deb"
+        deb: "/tmp/vernemq-{{ sansible_vernemq_version }}.{{ ansible_lsb.codename }}.x86_64.deb"
   become: yes
   when: sansible_vernemq_download_url is none

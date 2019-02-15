@@ -51,7 +51,7 @@ lint:
       ignore: .venv_ansible*
       rules:
         line-length:
-          max: 159
+          max: 175
         truthy: disable
 
 dependency:
