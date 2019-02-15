@@ -3,14 +3,15 @@
 galaxy_info:
   description: Install and configure VerneMQ
   license: MIT
-  min_ansible_version: 2.2
-  min_ansible_container_version: 2.2
+  min_ansible_version: 2.5
+  min_ansible_container_version: 2.5
 
   platforms:
     - name: Ubuntu
       versions:
         - trusty
         - xenial
+        - bionic
 
   galaxy_tags:
     - networking
