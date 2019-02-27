@@ -17,7 +17,7 @@ To install run `ansible-galaxy install sansible.vernemq` or add this to your
 
 ```YAML
 - name: sansible.vernemq
-  version: v2.0
+  version: v3.1.x
 ```
 
 and run `ansible-galaxy install -p ./roles -r roles.yml`

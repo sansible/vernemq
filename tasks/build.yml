@@ -16,24 +16,88 @@
     reload: yes
   when: (sysctl_filemax.stdout | int) < sansible_vernemq_nofile
 
-- block:
+- name: Install VerneMQ from sansible_vernemq_download_url
+  block:
+
     - name: Download VerneMQ .deb Package from sansible_vernemq_download_url
       get_url:
         url: "{{ sansible_vernemq_download_url }}"
         dest: "/tmp/{{ sansible_vernemq_download_url.split('/')[-1] }}"
+      retries: 2
+      register: ansible_vernemq_download
+      until: ansible_vernemq_download is succeeded
+
     - name: Install VerneMQ .deb Package from sansible_vernemq_download_url
       apt:
         deb: "/tmp/{{ sansible_vernemq_download_url.split('/')[-1] }}"
+
   become: yes
   when: sansible_vernemq_download_url is not none
 
-- block:
+- name: Install VerneMQ from official Repository
+  block:
+
     - name: Download VerneMQ .deb Package from official Repository
       get_url:
         url: "https://github.com/vernemq/vernemq/releases/download/{{ sansible_vernemq_version }}/vernemq-{{ sansible_vernemq_version }}.{{ ansible_lsb.codename }}.x86_64.deb"
         dest: "/tmp/vernemq-{{ sansible_vernemq_version }}.{{ ansible_lsb.codename }}.x86_64.deb"
+      retries: 2
+      register: ansible_vernemq_download
+      until: ansible_vernemq_download is succeeded
+
     - name: Install VerneMQ .deb Package from official Repository
       apt:
         deb: "/tmp/vernemq-{{ sansible_vernemq_version }}.{{ ansible_lsb.codename }}.x86_64.deb"
+
   become: yes
   when: sansible_vernemq_download_url is none
+
+- name: Set VerneMQ nofile Limits
+  become: yes
+  lineinfile:
+    dest: /etc/default/vernemq
+    create: yes
+    regexp: "^ulimit -n \\d+"
+    line: "ulimit -n {{ sansible_vernemq_nofile }}"
+  notify: restart vernemq
+
+- name: Set VerneMQ nofile limits.conf
+  become: yes
+  lineinfile:
+    dest: /etc/security/limits.conf
+    create: no
+    regexp: "^vernemq\\s+{{ item }}\\s+nofile\\s+\\d+"
+    line: "vernemq {{ item }} nofile {{ sansible_vernemq_nofile }}"
+  notify: restart vernemq
+  with_items:
+    - soft
+    - hard
+
+- name: Locate VerneMQ SystemdD conf
+  shell: dpkg -L vernemq | grep vernemq.service
+  register: sansible_vernemq_systemd_conf_file_location
+  changed_when: no
+  when: ansible_service_mgr == 'systemd'
+
+- name: Add VerneMQ SystemD settings
+  become: yes
+  ini_file:
+    option: "{{ item.key }}"
+    path: "{{ sansible_vernemq_systemd_conf_file_location.stdout }}"
+    section: Service
+    value: "{{ item.value }}"
+  with_dict:
+    LimitNOFILE: "{{ sansible_vernemq_nofile }}"
+    ExecReload: "/usr/sbin/vernemq restart"
+  register: sansible_vernemq_systemd_conf_file
+  when: ansible_service_mgr == 'systemd'
+
+- name: Ensure VerneMQ SystemD service is updated
+  become: yes
+  systemd:
+    daemon_reload: yes
+  when:
+    - ansible_service_mgr == "systemd"
+    - sansible_vernemq_systemd_conf_file.changed
+  tags:
+    - skip_ansible_lint
