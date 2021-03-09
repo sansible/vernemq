@@ -1,7 +1,7 @@
 ---
 
 - repo: https://github.com/willthames/ansible-lint.git
-  sha: v3.4.17
+  sha: v5.0.2
   hooks:
     - id: ansible-lint
       types: [yaml]
@@ -18,8 +18,8 @@
       files: molecule/.*/create\.yml
       args: [-x, ANSIBLE0016]
 
-- repo: git://github.com/pre-commit/pre-commit-hooks
-  sha: v0.9.1
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  sha: v3.4.0
   hooks:
     - id: check-json
     - id: flake8

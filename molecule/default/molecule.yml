@@ -4,55 +4,75 @@ driver:
   name: docker
 
 platforms:
-  - name: vernemq-trusty-1
-    image: ubuntu:trusty
-    groups:
-      - trusty
-      - node_one
-  - name: vernemq-trusty-2
-    image: ubuntu:trusty
-    groups:
-      - trusty
-      - other_nodes
-  - name: vernemq-trusty-3
-    image: ubuntu:trusty
-    groups:
-      - trusty
-      - other_nodes
   - name: vernemq-xenial-1
-    image: ubuntu:xenial
+    image: jrei/systemd-ubuntu:16.04
     groups:
       - xenial
       - node_one
+    command: /sbin/init
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
   - name: vernemq-xenial-2
-    image: ubuntu:xenial
+    image: jrei/systemd-ubuntu:16.04
     groups:
       - xenial
       - other_nodes
+    command: /sbin/init
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
   - name: vernemq-xenial-3
-    image: ubuntu:xenial
+    image: jrei/systemd-ubuntu:16.04
     groups:
       - xenial
       - other_nodes
+    command: /sbin/init
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  - name: vernemq-bionic-1
+    image: jrei/systemd-ubuntu:18.04
+    groups:
+      - bionic
+      - node_one
+    command: /sbin/init
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  - name: vernemq-bionic-2
+    image: jrei/systemd-ubuntu:18.04
+    groups:
+      - bionic
+      - other_nodes
+    command: /sbin/init
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  - name: vernemq-bionic-3
+    image: jrei/systemd-ubuntu:18.04
+    groups:
+      - bionic
+      - other_nodes
+    command: /sbin/init
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
 
 provisioner:
   name: ansible
-  config_options:
-    defaults:
-      hash_behaviour: merge
-  lint:
-    name: ansible-lint
 
-lint:
-  name: yamllint
-  options:
-    config-data:
-      extends: default
-      ignore: .venv_ansible*
-      rules:
-        line-length:
-          max: 175
-        truthy: disable
+lint: |
+  set -e
+  yamllint .
+  ansible-lint --exclude molecule
+  flake8 molecule/
 
 dependency:
   name: galaxy
@@ -62,5 +82,3 @@ scenario:
 
 verifier:
   name: testinfra
-  lint:
-    name: flake8

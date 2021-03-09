@@ -2,46 +2,41 @@
 
 - name: Edit VerneMQ Configuration File
   become: yes
-  ini_file:
+  community.general.ini_file:
     dest: /etc/vernemq/vernemq.conf
-    section: ~
+    mode: "0644"
     option: "{{ item.key }}"
-    value: "{% if item.value == true %}on{% elif item.value == false %}off{% else %}{{ item.value }}{% endif %}"
+    section: ~
+    value: "{{ item.value }}"
   with_dict: "{{ sansible_vernemq_configuration }}"
   notify: reload vernemq
 
 - name: Check VerneMQ Configuration Options
   become: yes
-  command: vernemq chkconfig
+  ansible.builtin.command: vernemq chkconfig
   changed_when: no
-
-- name: Start and enable VerneMQ for SysV
-  become: yes
-  service:
-    name: vernemq
-    state: started
-    enabled: yes
-  when: ansible_service_mgr != "systemd"
 
 - name: Start and enable VerneMQ for SystemD
   become: yes
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: yes
     enabled: yes
     name: vernemq
     state: started
-  when: ansible_service_mgr == "systemd"
+
+- name: Ensure VerneMQ Configuration Changes are in Effect Before Cluster Checks
+  meta: flush_handlers
 
 - name: Get Cluster Status
   become: yes
-  command: vmq-admin cluster show
+  ansible.builtin.command: vmq-admin cluster show
   register: cluster_show
   changed_when: no
   when: sansible_vernemq_cluster_discovery_node is not none
 
 - name: Join Cluster
   become: yes
-  command: "vmq-admin cluster join discovery-node={{ sansible_vernemq_cluster_discovery_node }}"
+  ansible.builtin.command: "vmq-admin cluster join discovery-node={{ sansible_vernemq_cluster_discovery_node }}"
   register: cluster_join
   when:
     - sansible_vernemq_cluster_discovery_node is not none

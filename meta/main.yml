@@ -4,16 +4,14 @@ galaxy_info:
   author: sansible
   description: Install and configure VerneMQ
   license: MIT
-  min_ansible_version: 2.5
-  min_ansible_container_version: 2.5
-
+  min_ansible_version: 2.10
+  min_ansible_container_version: 2.10
+  role_name: vernemq
   platforms:
     - name: Ubuntu
       versions:
-        - trusty
         - xenial
         - bionic
-
   galaxy_tags:
     - broker
     - iot

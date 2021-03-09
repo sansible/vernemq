@@ -7,11 +7,7 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 def test_vernemq_nofiles(host):
-    vmq_default = host.file('/etc/default/vernemq').content_string
-    for line in vmq_default.split('\n'):
-        if ' '.join(line.split()).startswith('ulimit -n '):
-            vmq_default_ulimit = line.split()[2]
-
+    vmq_default_ulimit = "65536"
     vmq_pid = host.process.get(user='vernemq', comm='beam.smp').pid
     vmq_limits = host.file('/proc/{0}/limits'.format(vmq_pid)).content_string
     for line in vmq_limits.split('\n'):
@@ -24,7 +20,9 @@ def test_vernemq_nofiles(host):
 def test_vernemq_config(host):
     vmq_config = host.file('/etc/vernemq/vernemq.conf')
     assert vmq_config.exists
-    assert vmq_config.contains('^\s*distributed_cookie\s*=\s*moleculetest\s*$')
+    assert vmq_config.contains(
+        r"^\s*distributed_cookie\s*=\s*moleculetest\s*$"
+    )
 
 
 def test_vernemq_listening(host):
