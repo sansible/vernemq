@@ -4,4 +4,4 @@ sansible_vernemq_cluster_discovery_node: ~
 sansible_vernemq_configuration: {}
 sansible_vernemq_download_url: ~
 sansible_vernemq_nofile: 65536
-sansible_vernemq_version: 1.7.0
+sansible_vernemq_version: 1.11.0

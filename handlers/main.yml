@@ -4,7 +4,7 @@
   become: yes
   service:
     name: vernemq
-    state: reloaded
+    state: restarted
 
 - name: restart vernemq
   become: yes

@@ -6,7 +6,8 @@
   roles:
     - role: vernemq
       sansible_vernemq_configuration:
-        allow_anonymous: yes
+        accept_eula: "yes"
+        allow_anonymous: "on"
         distributed_cookie: moleculetest
         listener.vmq.clustering: "{{ ansible_eth0.ipv4.address }}:44053"
         nodename: "{{ ansible_hostname }}@{{ ansible_eth0.ipv4.address }}"
@@ -14,11 +15,16 @@
 - name: Converge Other Nodes
   gather_facts: yes
   hosts: other_nodes
+
+  vars:
+    group_os_name: "{{ inventory_hostname.split('-')[1] }}"
+
   roles:
     - role: vernemq
-      sansible_vernemq_cluster_discovery_node: "vernemq-{{ group_names[1] }}-1@{{ hostvars['vernemq-' + group_names[1] + '-1'].ansible_eth0.ipv4.address }}"
+      sansible_vernemq_cluster_discovery_node: "vernemq-{{ group_os_name }}-1@{{ hostvars['vernemq-' + group_os_name + '-1'].ansible_eth0.ipv4.address }}"
       sansible_vernemq_configuration:
-        allow_anonymous: yes
+        accept_eula: "yes"
+        allow_anonymous: "on"
         distributed_cookie: moleculetest
         listener.vmq.clustering: "{{ ansible_eth0.ipv4.address }}:44053"
         nodename: "{{ ansible_hostname }}@{{ ansible_eth0.ipv4.address }}"

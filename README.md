@@ -17,7 +17,7 @@ To install run `ansible-galaxy install sansible.vernemq` or add this to your
 
 ```YAML
 - name: sansible.vernemq
-  version: v3.1.x
+  version: v4.0-latest
 ```
 
 and run `ansible-galaxy install -p ./roles -r roles.yml`
@@ -64,6 +64,7 @@ Install VerneMQ v1.2.0, set the number of open maximum open files (`nofiles`) to
   roles:
     - role: sansible.vernemq
       sansible_vernemq:
+        allow_anonymous: "on"
         cluster_discovery_node: saturn@192.168.0.3
         configuration:
           leveldb.maximum_memory.percent: 8
@@ -85,7 +86,7 @@ The `configuration` section is also the place to
     - role: sansible.vernemq
       sansible_vernemq:
         configuration:
-          plugins.vmq_plugin: on
+          plugins.vmq_plugin: "on"
 ```  
 
 
