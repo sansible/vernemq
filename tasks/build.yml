@@ -59,7 +59,6 @@
     create: no
     regexp: "^vernemq\\s+{{ item }}\\s+nofile\\s+\\d+"
     line: "vernemq {{ item }} nofile {{ sansible_vernemq_nofile }}"
-  notify: restart vernemq
   with_items:
     - soft
     - hard
